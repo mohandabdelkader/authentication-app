@@ -1,12 +1,14 @@
 import { RestCodePayload } from '@/features/authentication/restCode/type';
 import useRestCode from '@/features/authentication/restCode/useRestCode';
-import { Box, Button, TextField } from '@mui/material';
+import { Alert, Box, Button, TextField } from '@mui/material';
 import axios from 'axios';
 import { useFormik } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { validationRestCode } from './validation';
 
 function RestCodeForm() {
+	const validationSchema = validationRestCode();
 	const navigate = useNavigate();
 	const { mutateAsync, isPending } = useRestCode();
 
@@ -30,7 +32,8 @@ function RestCodeForm() {
 					toast.error(error.response?.data?.message || 'An error occurred');
 				}
 			}
-		}
+		},
+		validationSchema
 	});
 	return (
 		<>
@@ -49,6 +52,7 @@ function RestCodeForm() {
 					padding: 8
 				}}>
 				<TextField required label="Enter Rest Code" type="text" name="resetCode" value={Formik.values.resetCode} onChange={Formik.handleChange} onBlur={Formik.handleBlur} />
+				{Formik.errors.resetCode && Formik.touched.resetCode ? <Alert severity="error">{Formik.errors.resetCode}</Alert> : null}
 				<Button variant="contained" type="submit" disabled={isPending}>
 					{isPending ? 'Submitting...' : 'Submit'}
 				</Button>
