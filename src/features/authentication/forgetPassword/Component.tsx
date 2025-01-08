@@ -1,12 +1,14 @@
-import { Box, Button, TextField } from '@mui/material';
+import { Alert, Box, Button, TextField } from '@mui/material';
 import axios from 'axios';
 import { useFormik } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { ForgetPasswordPayload } from './type';
 import useForgetPassword from './useForgetPassword';
+import { handelValidationForgetPassword } from './validation';
 
 function ForgetPasswordForm() {
+	const validationSchema = handelValidationForgetPassword();
 	const { mutateAsync, isPending } = useForgetPassword();
 	const navigate = useNavigate();
 	const formik = useFormik<ForgetPasswordPayload>({
@@ -28,7 +30,8 @@ function ForgetPasswordForm() {
 					toast.error(error.response?.data.message);
 				}
 			}
-		}
+		},
+		validationSchema
 	});
 
 	return (
@@ -50,6 +53,7 @@ function ForgetPasswordForm() {
 				// background: 'red'
 			}}>
 			<TextField required label="Enter Your Email" type="email" value={formik.values.email} onChange={formik.handleChange} onBlur={formik.handleBlur} name="email" />
+			{formik.touched.email && formik.errors.email ? <Alert severity="error">{formik.errors.email}</Alert> : null}
 			<Button variant="contained" type="submit" disabled={isPending}>
 				{isPending ? 'Submitting...' : 'Submit'}
 			</Button>
